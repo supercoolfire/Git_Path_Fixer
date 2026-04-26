@@ -1,0 +1,6 @@
+## Core Feature Contract
+
+PRODUCT GOALS
+1. Repair broken Git repos by converting absolute paths to relative ones.
+2. Provide a "Dry Run" preview of all changes before execution.
+3. Ensure portability of moved repositories across different local environments.

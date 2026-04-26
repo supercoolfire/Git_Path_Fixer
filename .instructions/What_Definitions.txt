@@ -1,0 +1,33 @@
+## WHAT Definitions
+
+# WHAT: System Definition
+
+[SCANNER]
+Description: Detection engine for absolute paths in .git metadata.
+
+[FIXER]
+Description: Logic engine for calculating relative path offsets from project root.
+
+[LAYOUT]
+Description: Responsive Flet UI implementing Flexbox principles.
+
+[LAYOUT.HEADER]
+Description: Header presentation for title and branding.
+
+[LAYOUT.STATUS]
+Description: Status banner for scan, repair, and rollback feedback.
+
+[SAFETY]
+Description: Backup and verification system for .git directories.
+
+[RUNTIME]
+Description: Startup readiness and dependency bootstrap behavior.
+
+[RUNTIME.DEPENDENCIES]
+Description: Automatic installation of required Python packages before UI startup.
+
+[BRANDING]
+Description: Visual identity assets used by the app.
+
+[BRANDING.ICON]
+Description: Shared application icon used in both the UI and the native window.

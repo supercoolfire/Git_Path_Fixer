@@ -1,0 +1,37 @@
+## Rules Contract
+
+# RULES: System Constraints
+
+PRIORITY ORDER
+1. [SAFETY]
+2. [FIXER]
+3. [SCANNER]
+4. [LAYOUT]
+
+FILE MAPPING
+- [LAYOUT]   -> main.py
+- [SCANNER]  -> core/scanner.py
+- [FIXER]    -> core/fixer.py
+- [SAFETY]   -> utils/safety.py
+- [RUNTIME]  -> utils/bootstrap.py
+- [BRANDING] -> main.py, assets/app_icon.png, assets/app_icon.ico
+
+REFERENCE INTEGRITY RULES
+- Every implementation detail must link to a WHAT ID.
+- HOW behaviors must only reference existing WHAT IDs.
+- No orphan IDs allowed.
+
+VALIDATION RULES
+- [RULE.NO_BINARY] Do not modify non-text files within the .git directory.
+- [RULE.BACKUP_FIRST] Write operations are strictly forbidden until backup is confirmed.
+- [RULE.USER_CONFIRM] Fixes require explicit user approval via UI after Dry Run.
+- [RULE.ROLLBACK_ON_FAILURE] Any failed repair or failed validation must restore the original .git backup before reporting the error.
+
+VIOLATION FORMAT
+If a rule is broken, report:
+Violation: <ID>
+Reason: <description>
+
+ENFORCEMENT NOTES
+- All changes must be traceable.
+- Hidden behaviors are prohibited.

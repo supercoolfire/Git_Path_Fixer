@@ -1,0 +1,16 @@
+## Implementation Rules
+
+DETAILED REQUIREMENTS
+1. Implement a Flet file picker to select the repository root.
+2. Show a scrollable list of "Found Snitches" (absolute paths) in the UI.
+3. Implement a 'Repair' button that triggers the [SAFETY] and [FIXER] modules.
+
+EXECUTION EXPECTATIONS
+- Use Python's `pathlib` for cross-platform path handling.
+- Keep the UI responsive during scanning using Python threading or async.
+
+REVIEW CHECKLIST
+- Requirements covered.
+- Architecture respected.
+- Current Structure updated after structural changes.
+- Violations cite exact RULES IDs.

@@ -1,0 +1,30 @@
+## HOW Behaviors
+
+# HOW: Behavior Logic
+
+[SCANNER.01]
+Rule: Identify absolute paths in .git/config, .git/hooks, and .git/modules.
+
+[FIXER.01]
+Rule: Use project root as anchor to resolve absolute paths into relative literals.
+
+[LAYOUT.01]
+Rule: Utilize Flet Row/Column "expand" properties to ensure UI responsiveness.
+
+[LAYOUT.HEADER.01]
+Rule: Display the application icon and title together in the header area.
+
+[LAYOUT.STATUS.01]
+Rule: Use the status banner background color, not the text color, to signal repair success or rollback failure.
+
+[SAFETY.01]
+Rule: Create a full copy of .git folder before any file modification.
+
+[SAFETY.02]
+Rule: Validate repaired metadata immediately after write and restore the backup automatically if validation fails.
+
+[RUNTIME.DEPENDENCIES.01]
+Rule: If runtime UI dependencies are missing, install them from the project dependency manifest before starting the app.
+
+[BRANDING.ICON.01]
+Rule: Use the shared branding artwork in the header display and the native Windows window icon.

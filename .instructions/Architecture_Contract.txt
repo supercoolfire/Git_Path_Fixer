@@ -1,0 +1,38 @@
+## Architecture Contract
+
+# ARCHITECTURE: Traceable structure
+
+Expected or Planned Structure:
+Git Path Fixer/
+|-- main.py
+|-- core/
+|   |-- scanner.py
+|   `-- fixer.py
+`-- utils/
+    `-- safety.py
+
+Current Structure:
+- This section must be filled and updated by the agent to reflect the actual current project state.
+- Do not remove this note, because it may be maintained by different agents over time.
+- Replace the placeholder tree below with the real current structure when implementation begins.
+
+Git Path Fixer/
+|-- main.py
+|-- Modelfile.txt
+|-- requirements.txt
+|-- assets/
+|   |-- app_icon.ico
+|   `-- app_icon.png
+|-- core/
+|   |-- __init__.py
+|   |-- fixer.py
+|   `-- scanner.py
+`-- utils/
+    |-- bootstrap.py
+    |-- __init__.py
+    `-- safety.py
+
+Maintenance Notes:
+- Planned Structure describes the target architecture.
+- Current Structure describes the actual codebase as it exists now.
+- The current structure adds `__init__.py` files, a dependency manifest, and a bootstrap module so imports work cleanly, runtime dependencies can self-install, and the contract entrypoint remains visible.
