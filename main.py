@@ -5,6 +5,7 @@ from pathlib import Path
 from core.fixer import PlannedChange, plan_changes
 from core.scanner import scan_repository
 from utils.bootstrap import ensure_dependencies
+from utils.ownership import fix_ownership
 from utils.safety import repair_repository
 
 BOOTSTRAP_STATUS = ensure_dependencies(Path(__file__).with_name("requirements.txt"))
@@ -36,7 +37,7 @@ def main(page: ft.Page) -> None:
     status_container = ft.Container(
         content=status_text,
         padding=12,
-        border=ft.border.all(1, ft.Colors.OUTLINE_VARIANT),
+        border=ft.border.Border.all(1, ft.Colors.OUTLINE_VARIANT),
         border_radius=8,
         bgcolor="#F3F4F6",
     )
@@ -54,7 +55,7 @@ def main(page: ft.Page) -> None:
                 ft.Container(
                     content=ft.Text("No planned changes yet."),
                     padding=12,
-                    border=ft.border.all(1, ft.Colors.OUTLINE_VARIANT),
+                    border=ft.border.Border.all(1, ft.Colors.OUTLINE_VARIANT),
                     border_radius=8,
                 )
             )
@@ -78,7 +79,7 @@ def main(page: ft.Page) -> None:
                         spacing=4,
                     ),
                     padding=12,
-                    border=ft.border.all(1, ft.Colors.OUTLINE_VARIANT),
+                    border=ft.border.Border.all(1, ft.Colors.OUTLINE_VARIANT),
                     border_radius=8,
                 )
             )
@@ -86,6 +87,7 @@ def main(page: ft.Page) -> None:
 
     def sync_actions() -> None:
         dry_run_button.disabled = selected_repo_root is None
+        fix_ownership_button.disabled = selected_repo_root is None
         repair_button.disabled = not (
             selected_repo_root is not None
             and planned_changes
@@ -162,6 +164,16 @@ def main(page: ft.Page) -> None:
                 "#FEE2E2",
             )
 
+    def run_fix_ownership(_: ft.ControlEvent) -> None:
+        if selected_repo_root is None:
+            set_status("Pick a repository before fixing ownership.")
+            return
+        result = fix_ownership(selected_repo_root)
+        if result.success:
+            set_status(result.message, "#DCFCE7")
+        else:
+            set_status(result.message, "#FEE2E2")
+
     async def browse_repo(_: ft.ControlEvent) -> None:
         selected_path = await file_picker.get_directory_path(
             dialog_title="Select repository root"
@@ -177,6 +189,12 @@ def main(page: ft.Page) -> None:
         on_click=browse_repo,
     )
     dry_run_button = ft.Button("Dry Run", icon=ft.Icons.SEARCH, on_click=run_dry_run)
+    fix_ownership_button = ft.Button(
+        "Fix Git Ownership",
+        icon=ft.Icons.LOCK_OPEN,
+        on_click=run_fix_ownership,
+        tooltip="Adds this repo to git's global safe.directory so git commands work after migration.",
+    )
     repair_button = ft.FilledButton("Repair", icon=ft.Icons.BUILD, on_click=run_repair)
 
     approval_checkbox.on_change = lambda _: sync_actions() or page.update()
@@ -213,7 +231,7 @@ def main(page: ft.Page) -> None:
                     alignment=ft.MainAxisAlignment.START,
                 ),
                 ft.Row(
-                    controls=[dry_run_button, repair_button, approval_checkbox],
+                    controls=[dry_run_button, repair_button, fix_ownership_button, approval_checkbox],
                     wrap=True,
                 ),
                 status_container,
@@ -231,4 +249,8 @@ def main(page: ft.Page) -> None:
 
 
 if __name__ == "__main__":
-    ft.run(main, before_main=before_main)
+    ft.run(
+        main,
+        before_main=before_main,
+        assets_dir=str(Path(__file__).parent / "assets"),
+    )

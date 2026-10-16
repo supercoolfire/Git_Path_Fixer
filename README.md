@@ -5,59 +5,14 @@
 </p>
 
 <p align="center">
-  Repair broken absolute paths inside <code>.git</code> metadata after a repository is moved, cloned from another machine, or restored from backup.
+  Repair broken absolute paths inside <code>.git</code> metadata after a repository is moved, restored, or copied to another machine.
 </p>
 
-Git Path Fixer is a small desktop app built for one specific cleanup job: scanning a repository's `.git` internals for absolute paths, previewing the safe rewrites, and applying the repair with a backup and validation step.
+Git Path Fixer is a small desktop app for developers who end up with a repository that still works just enough to be confusing, while parts of `.git` quietly point at an old folder, drive, or machine. That usually surfaces through broken worktrees, hooks, or submodule metadata — the kind of thing people often fix by hand, line by line.
 
-This is useful when Git itself is still present, but worktrees, hooks, or module metadata keep pointing at an old machine path and start causing confusing failures.
+This app gives you a safer, more legible workflow: scan first, inspect the exact rewrite plan, approve, and keep a backup in case anything needs to be rolled back.
 
-## Who This Is For
-
-- Developers who moved a repo to a new folder, drive, or computer.
-- Anyone recovering projects from a zip, backup, external drive, or synced workspace.
-- People using worktrees or submodules and running into path-related breakage inside `.git`.
-- Teammates who want a guided desktop workflow instead of editing Git metadata by hand.
-
-## What The App Does
-
-- Lets you choose a repository root with a folder picker.
-- Scans `.git/config`, `.git/hooks`, and `.git/modules` for absolute Windows, UNC, and POSIX-style paths.
-- Builds a dry-run repair plan before any file is changed.
-- Requires explicit approval before writing to `.git` metadata.
-- Creates a full `.git` backup before applying repairs.
-- Validates the repaired repo and restores the backup automatically if validation fails.
-
-## Why It Exists
-
-Broken Git metadata can be annoying to diagnose because the repository may look mostly fine until a hook, worktree, or module command suddenly points at a path that no longer exists.
-
-Git Path Fixer turns that into a safer workflow:
-
-1. Pick the repository.
-2. Review the exact lines that will change.
-3. Approve the repair.
-4. Let the app validate the result and keep a backup nearby.
-
-## Screenshots
-
-### Empty State
-
-Choose a repository root and start with a dry run.
-
-![Git Path Fixer empty state](screenshots/1.png)
-
-### Dry Run Preview
-
-The app shows each planned rewrite, including the source file, line number, old path, and replacement path.
-
-![Git Path Fixer dry run preview](screenshots/2.png)
-
-### Successful Repair
-
-After approval, the app applies the repair, validates it, and shows where the `.git` backup was saved.
-
-![Git Path Fixer successful repair](screenshots/3.png)
+---
 
 ## Quick Start
 
@@ -66,12 +21,69 @@ pip install -r requirements.txt
 python main.py
 ```
 
-The app currently depends on:
+---
 
-- `flet>=0.28,<1.0`
+## Workflow
+
+### 1. Open the Repository
+
+Browse to the repository root you want to inspect. The app stays read-only at this point.
+
+![Git Path Fixer empty state](screenshots/1.png)
+
+### 2. Fix Git Ownership (if migrated from another machine)
+
+If you moved repos from another machine or user account, git may refuse to operate on them due to an ownership mismatch:
+
+```
+fatal: detected dubious ownership in repository at '...'
+```
+
+Click **Fix Git Ownership** to resolve this. The app runs:
+
+```bash
+git config --global --add safe.directory <your-repo-path>
+```
+
+This trusts only the specific repo you selected — it does not use the wildcard `*` and does not disable git's ownership checks globally.
+
+If you have many migrated repos and prefer to handle them all at once from a terminal, you can run this PowerShell snippet instead:
+
+```powershell
+Get-ChildItem -Path C:\Users\HSEF\Desktop -Recurse -Filter ".git" -Directory | ForEach-Object {
+    $repoPath = $_.Parent.FullName -replace '\\', '/'
+    git config --global --add safe.directory $repoPath
+    Write-Host "Added: $repoPath"
+}
+```
+
+### 3. Run a Dry Scan
+
+Click **Dry Run** to search `.git/config`, `.git/hooks`, and `.git/modules` for absolute Windows, UNC, and POSIX-style paths. No files are written at this stage.
+
+### 4. Review the Repair Plan
+
+The app shows the exact `.git` file, line number, old path, and replacement path for every repair it can safely make. Review everything before committing to any changes.
+
+![Git Path Fixer dry run preview](screenshots/2.png)
+
+### 5. Approve and Repair
+
+Check the approval box, then click **Repair**. The app:
+
+1. Creates a full `.git` backup
+2. Applies the rewrites
+3. Validates the repository with `git rev-parse` and `git config --list`
+4. Reports the backup location
+
+If validation fails for any reason, the original `.git` is restored automatically from the backup.
+
+![Git Path Fixer successful repair](screenshots/3.png)
+
+---
 
 ## Notes
 
-- The tool is intentionally conservative and only rewrites paths it can confidently map back to the selected repository.
-- It is aimed at repairing repository metadata, not rewriting your tracked project files.
-- If `git` is available on your system, the app uses it to validate the repaired repository after the rewrite.
+- The app only rewrites paths it can confidently map back to the selected repository root. It stays conservative on purpose.
+- Backups are written to a sibling folder next to the repo: `<repo-name>__git_path_fixer_backups/<timestamp>/`
+- Built with `flet>=0.28,<1.0`
